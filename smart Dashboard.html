@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Dashboard</title>
+    <link rel="stylesheet" href="style.css" />
+    <style>
+        :root {
+            --bg-color: #fef6e4;
+            --text-color: #001858;
+            --accent-color: #ff8906;
+            --note-bg: #f582ae;
+            --card-bg: #ffffff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #0f0f0f;
+            --text-color: #fefefe;
+            --accent-color: #ff4d6d;
+            --note-bg: #333333;
+            --card-bg: #1f1f1f;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+
+        .dashboard {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        #clock {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: var(--accent-color);
+        }
+
+        section, footer {
+            background: var(--card-bg);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: var(--accent-color);
+            margin-bottom: 15px;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            border: 2px solid var(--accent-color);
+            border-radius: 10px;
+            font-size: 1em;
+        }
+
+        button {
+            padding: 10px 20px;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #e56b00;
+        }
+
+        ul#todo-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        ul#todo-list li {
+            padding: 8px;
+            background: #f3d2c1;
+            border-radius: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .note {
+            background-color: var(--note-bg);
+            padding: 12px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+
+        footer {
+            grid-column: 1 / -1;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+    <header>
+        <h1 id="greeting">Hello!</h1>
+        <div id="clock">--:--</div>
+    </header>
+
+    <section class="weather">
+        <h2>Weather</h2>
+        <div id="weather-info">Loading...</div>
+    </section>
+
+    <section class="todo">
+        <h2>To-Do List</h2>
+        <input type="text" id="todo-input" placeholder="Add a task" />
+        <button onclick="addTodo()">Add</button>
+        <ul id="todo-list"></ul>
+    </section>
+
+    <section class="notes">
+        <h2>Notes</h2>
+        <textarea id="note-input" placeholder="Write something..."></textarea>
+        <button onclick="saveNote()">Save Note</button>
+        <div id="notes-container"></div>
+    </section>
+
+    <footer>
+        <button id="theme-toggle">Toggle Theme</button>
+    </footer>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        document.getElementById('clock').textContent = now.toLocaleTimeString();
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+
+    const greeting = document.getElementById("greeting");
+    const hour = new Date().getHours();
+    if (hour < 12) {
+        greeting.textContent = "Good Morning!";
+    } else if (hour < 18) {
+        greeting.textContent = "Good Afternoon!";
+    } else {
+        greeting.textContent = "Good Evening!";
+    }
+
+    function addTodo() {
+        const input = document.getElementById("todo-input");
+        const task = input.value.trim();
+        if (task === "") return;
+
+        const li = document.createElement("li");
+        li.textContent = task;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "✖";
+        delBtn.style.marginLeft = "10px";
+        delBtn.onclick = () => li.remove();
+
+        li.appendChild(delBtn);
+        document.getElementById("todo-list").appendChild(li);
+        input.value = "";
+    }
+
+    function saveNote() {
+        const text = document.getElementById("note-input").value.trim();
+        if (text === "") return;
+
+        const note = document.createElement("div");
+        note.className = "note";
+        note.textContent = text;
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.style.marginLeft = "10px";
+        delBtn.onclick = () => note.remove();
+
+        note.appendChild(delBtn);
+        document.getElementById("notes-container").appendChild(note);
+        document.getElementById("note-input").value = "";
+    }
+
+    document.getElementById("theme-toggle").addEventListener("click", () => {
+        const html = document.documentElement;
+        const current = html.getAttribute("data-theme");
+        html.setAttribute("data-theme", current === "dark" ? "light" : "dark");
+    });
+</script>
+</body>
+</html>
